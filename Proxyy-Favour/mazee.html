@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kloner | Hangout</title>
+  <style>
+    :root { color-scheme: dark; --cyan:#69f6ff; --amber:#ffc857; --panel:#101a2c; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; background:radial-gradient(circle at 50% 15%, #18284a 0, #080d18 45%, #03050a 100%); color:#eaf8ff; font-family:system-ui,-apple-system,Segoe UI,sans-serif; }
+    .wrap { width:min(960px, 100%); padding:20px; }
+    header { display:flex; justify-content:space-between; gap:18px; align-items:end; margin-bottom:14px; }
+    h1 { margin:0; font-size:clamp(1.45rem,4vw,2.2rem); letter-spacing:.05em; }
+    .sub { color:#8ea6c6; margin:.35rem 0 0; font-size:.92rem; }
+    .hud { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+    .stat { background:rgba(16,26,44,.86); border:1px solid #243857; border-radius:10px; padding:8px 11px; min-width:86px; text-align:center; }
+    .stat b { display:block; color:var(--cyan); font-size:1.1rem; }
+    .stat span { color:#8ea6c6; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; }
+    .game-shell { position:relative; padding:12px; border:1px solid #203554; border-radius:18px; background:rgba(5,9,17,.8); box-shadow:0 20px 70px #000b; }
+    canvas { display:block; width:100%; height:auto; aspect-ratio:1; border-radius:10px; background:#02040a; outline:none; }
+    .message { margin:12px 2px 0; color:#9bb0cb; line-height:1.45; font-size:.92rem; }
+    .controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    button { cursor:pointer; border:1px solid #315174; color:#eaf8ff; background:#13213a; border-radius:9px; padding:9px 12px; font-weight:700; }
+    button:hover, button:focus-visible { border-color:var(--cyan); background:#18304f; outline:none; }
+    .win { display:none; position:absolute; inset:12px; border-radius:10px; place-items:center; text-align:center; background:rgba(2,7,14,.84); backdrop-filter:blur(4px); }
+    .win.show { display:grid; }
+    .card { max-width:420px; padding:28px; border:1px solid #3b6e7e; border-radius:16px; background:linear-gradient(145deg,#0d2434,#0b1222); box-shadow:0 0 40px #3ff8ff22; }
+    .card h2 { margin:.1rem 0 .5rem; color:var(--cyan); }
+    .card p { color:#b9cadc; margin:0 0 16px; }
+    @media (max-width:650px) { header { display:block; } .hud { justify-content:flex-start; margin-top:12px; } .wrap { padding:12px; } }
+    html.embed-mode .wrap { width:min(960px, calc(100vh - 260px), 100vw); padding:14px; }
+    html.embed-mode h1 { font-size:clamp(1.35rem, 2.1vw, 1.7rem); }
+    @media (max-height:650px) { html.embed-mode .wrap { width:min(100vw, calc(100vh - 250px)); padding:8px; } html.embed-mode .message { margin-top:8px; font-size:.82rem; } html.embed-mode .controls { margin-top:8px; } }
+  </style>
+  <script>if (new URLSearchParams(location.search).get('embed') === '1') document.documentElement.classList.add('embed-mode');</script>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div>
+        <h1>Reverse Blind Dungeon</h1>
+        <p class="sub">Map the darkness with sound. Find the exit before your memory fails.</p>
+      </div>
+      <div class="hud" aria-label="Game statistics">
+        <div class="stat"><b id="steps">0</b><span>steps</span></div>
+        <div class="stat"><b id="pings">0 / 0</b><span>pings</span></div>
+        <div class="stat"><b id="timer">0.0s</b><span>time</span></div>
+      </div>
+    </header>
+
+    <section class="game-shell">
+      <canvas id="game" width="720" height="720" tabindex="0" aria-label="Dark maze game. Use arrow keys or WASD to move."></canvas>
+      <div id="win" class="win">
+        <div class="card">
+          <h2>Exit found</h2>
+          <p id="winText">You escaped the dungeon.</p>
+          <button id="sameBtn">Play same maze</button>
+          <button id="newBtn">New maze</button>
+        </div>
+      </div>
+    </section>
+
+    <p class="message"><strong>Controls:</strong> Arrow keys or WASD to move one tile. Press <strong>Space</strong> or click the maze to ping without moving. Press <strong>R</strong> for a new maze. Walls glow briefly after each ping; the amber exit is revealed only inside the sonar radius.</p>
+    <div class="controls"><button id="pingBtn">Ping</button><button id="restartBtn">Restart same maze</button><button id="scrambleBtn">New maze</button></div>
+  </main>
+
+<script>
+(() => {
+  'use strict';
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const stepsEl = document.getElementById('steps');
+  const pingsEl = document.getElementById('pings');
+  const timerEl = document.getElementById('timer');
+  const win = document.getElementById('win');
+  const winText = document.getElementById('winText');
+  const COLS = 21, ROWS = 21;
+  const PING_RADIUS = 4.6;
+  const GLOW_MS = 1650;
+  let maze, player, exit, pings, pingBudget, steps, startedAt, won, glowUntil, particles, animation;
+
+  function shuffled(values) {
+    for (let i = values.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [values[i], values[j]] = [values[j], values[i]]; }
+    return values;
+  }
+
+  // Recursive backtracker creates a fully connected maze on odd-sized grids.
+  function makeMaze() {
+    maze = Array.from({length: ROWS}, () => Array(COLS).fill(1));
+    const carve = (x, y) => {
+      maze[y][x] = 0;
+      for (const [dx,dy] of shuffled([[2,0],[-2,0],[0,2],[0,-2]])) {
+        const nx=x+dx, ny=y+dy;
+        if (nx>0 && nx<COLS-1 && ny>0 && ny<ROWS-1 && maze[ny][nx]===1) {
+          maze[y+dy/2][x+dx/2]=0; carve(nx,ny);
+        }
+      }
+    };
+    carve(1,1);
+    player = {x:1,y:1};
+    // Choose the walkable cell farthest from the start by BFS.
+    const queue=[[1,1]], dist=new Map([['1,1',0]]), dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+    let far=[1,1], farD=0;
+    for (let i=0;i<queue.length;i++) {
+      const [x,y]=queue[i], d=dist.get(`${x},${y}`);
+      if (d>farD) { far=[x,y]; farD=d; }
+      for (const [dx,dy] of dirs) { const nx=x+dx,ny=y+dy,k=`${nx},${ny}`; if (maze[ny]?.[nx]===0&&!dist.has(k)) { dist.set(k,d+1); queue.push([nx,ny]); } }
+    }
+    exit={x:far[0],y:far[1]};
+    pingBudget = Math.max(8, Math.ceil(farD * 1.5));
+  }
+
+  function reset(same=false) {
+    if (!same) makeMaze();
+    pings=0; steps=0; startedAt=performance.now(); won=false; glowUntil=0; particles=[];
+    win.classList.remove('show'); updateHud(); ping(); draw(); canvas.focus();
+  }
+  function updateHud() {
+    stepsEl.textContent=steps;
+    pingsEl.textContent=`${pings} / ${pingBudget}`;
+    timerEl.textContent=`${((performance.now()-startedAt)/1000).toFixed(1)}s`;
+  }
+  function isOpen(x,y) { return maze[y]?.[x]===0; }
+  function ping() {
+    if (won || pings >= pingBudget) return;
+    pings++; glowUntil=performance.now()+GLOW_MS;
+    particles.push({t:performance.now(), x:player.x, y:player.y});
+    updateHud(); draw();
+  }
+  function move(dx,dy) {
+    if (won) return;
+    const nx=player.x+dx, ny=player.y+dy;
+    if (!isOpen(nx,ny)) { ping(); return; }
+    player.x=nx; player.y=ny; steps++; ping();
+    if (player.x===exit.x && player.y===exit.y) {
+      won=true; const time=((performance.now()-startedAt)/1000).toFixed(1);
+      winText.textContent=`You escaped in ${steps} steps, ${pings} pings, and ${time} seconds.`;
+      win.classList.add('show'); draw();
+    }
+  }
+  function key(e) {
+    const k=e.key.toLowerCase();
+    if (['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','r'].includes(k)) e.preventDefault();
+    if (k==='r') return reset(false);
+    if (k===' ' || k==='enter') return ping();
+    const dirs={arrowup:[0,-1],w:[0,-1],arrowdown:[0,1],s:[0,1],arrowleft:[-1,0],a:[-1,0],arrowright:[1,0],d:[1,0]};
+    if (dirs[k]) move(...dirs[k]);
+  }
+  function draw() {
+    const size=canvas.width/COLS;
+    ctx.fillStyle='#02040a'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    const now=performance.now(), glow=Math.max(0,glowUntil-now)/GLOW_MS;
+    // Subtle floor marks let the player keep only a tiny visual sense of position.
+    ctx.fillStyle='#07101d';
+    for (let y=1;y<ROWS-1;y++) for(let x=1;x<COLS-1;x++) if(!maze[y][x]) ctx.fillRect(x*size+size*.46,y*size+size*.46, size*.08,size*.08);
+    if (glow>0) {
+      ctx.save(); ctx.globalCompositeOperation='lighter';
+      for (let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) {
+        const d=Math.hypot(x-player.x,y-player.y); if(d>PING_RADIUS) continue;
+        const a=(1-d/PING_RADIUS)*glow;
+        if(maze[y][x]) { ctx.strokeStyle=`rgba(71,220,255,${a*.8})`; ctx.lineWidth=1.6; ctx.strokeRect(x*size+1,y*size+1,size-2,size-2); }
+        else { ctx.fillStyle=`rgba(42,143,185,${a*.08})`; ctx.fillRect(x*size,y*size,size,size); }
+      }
+      const exd=Math.hypot(exit.x-player.x,exit.y-player.y);
+      if(exd<=PING_RADIUS) { ctx.fillStyle=`rgba(255,200,87,${Math.max(.25,glow)})`; ctx.shadowColor='#ffc857'; ctx.shadowBlur=18; ctx.fillRect(exit.x*size+size*.26,exit.y*size+size*.26,size*.48,size*.48); ctx.shadowBlur=0; }
+      ctx.restore();
+    }
+    ctx.fillStyle='#69f6ff'; ctx.shadowColor='#69f6ff'; ctx.shadowBlur=18; ctx.beginPath(); ctx.arc((player.x+.5)*size,(player.y+.5)*size,size*.22,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+    for (const p of particles) { const age=(now-p.t)/GLOW_MS, r=age*PING_RADIUS*size; if(age<1){ctx.strokeStyle=`rgba(105,246,255,${(1-age)*.55})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc((p.x+.5)*size,(p.y+.5)*size,r,0,Math.PI*2);ctx.stroke();} }
+    particles=particles.filter(p=>now-p.t<GLOW_MS);
+    if (glow>0 || particles.length) animation=requestAnimationFrame(draw); else animation=null;
+    updateHud();
+  }
+  document.addEventListener('keydown', key);
+  canvas.addEventListener('click', ping);
+  document.getElementById('pingBtn').onclick=ping;
+  document.getElementById('restartBtn').onclick=()=>reset(true);
+  document.getElementById('scrambleBtn').onclick=()=>reset(false);
+  document.getElementById('sameBtn').onclick=()=>reset(true);
+  document.getElementById('newBtn').onclick=()=>reset(false);
+  makeMaze(); reset(true);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared ledger | Hangout</title>
+    <link rel="stylesheet" href="home%20page/style.css">
+    <link rel="stylesheet" href="home%20page/favour.css?v=7">
+    <link rel="stylesheet" href="pages.css?v=6">
+    <link rel="stylesheet" href="kloner.css?v=2">
+</head>
+<body class="subpage-body">
+    <header>
+        <a href="/home%20page/" class="logo">Hangout</a>
+        <ul>
+            <li><a href="/home%20page/">Home</a></li>
+            <li><a href="/create.html">Mark a proxy</a></li>
+            <li><a href="/people.html" class="active">People</a></li>
+            <li><a href="/Klone/index.html?embed=1&amp;v=2" id="klonerLink">Klone</a></li>
+            <li><a href="/sign%20up/" id="accountLink">Sign In</a></li>
+        </ul>
+    </header>
+    <main class="subpage-main relationship-main" id="relationshipPage">
+        <a class="relationship-back" href="/people.html">Back to your circle</a>
+        <div class="subpage-heading relationship-title">
+            <div class="favour-kicker">Your shared proxy ledger</div>
+            <h1 id="relationshipName">Loading your ledger…</h1>
+            <p id="relationshipDepartment">Every proxy. Between you two.</p>
+        </div>
+
+        <div class="glass-grid relationship-stats">
+            <article class="glass-card glass-surface glass-tilt">
+                <div class="glass-label">Your balance with them</div>
+                <div class="glass-number" id="relationshipBalance">—</div>
+                <div class="glass-foot" id="relationshipBalanceCaption">Only this person’s balance</div>
+            </article>
+            <article class="glass-card glass-surface glass-tilt">
+                <div class="glass-label">Proxies you covered</div>
+                <div class="glass-number" id="givenCount">0</div>
+                <div class="glass-foot">Confirmed by this person</div>
+            </article>
+            <article class="glass-card glass-surface glass-tilt">
+                <div class="glass-label">Proxies they covered</div>
+                <div class="glass-number" id="receivedCount">0</div>
+                <div class="glass-foot">Confirmed by you</div>
+            </article>
+        </div>
+
+        <div class="page-message" id="relationshipMessage" aria-live="polite"></div>
+
+        <section class="page-glass glass-surface glass-tilt relationship-treats">
+            <div class="relationship-section-heading">
+                <div><div class="favour-kicker">Only with this person</div><h2 id="treatHeading">Redeem a treat</h2></div>
+                <span class="relationship-available"><span id="availableBalance">0 FC</span><small id="availableCaption">Available with this person</small></span>
+            </div>
+            <p class="relationship-note">Pick a treat. Coins leave your balance on delivery.</p>
+            <form id="treatForm" class="page-form">
+                <label>Choose a treat<select id="treatSelection" required><option value="">Loading treats…</option></select></label>
+                <div class="relationship-treat-action"><button type="submit" id="treatSubmit" disabled>Request this treat</button><span id="treatBalanceNote"></span></div>
+            </form>
+            <div class="page-message" id="treatMessage" aria-live="polite"></div>
+        </section>
+    </main>
+    <footer class="subpage-footer">Hangout · IIT Roorkee</footer>
+    <script src="site.js"></script>
+    <script src="pages.js?v=11"></script>
+</body>
+</html>

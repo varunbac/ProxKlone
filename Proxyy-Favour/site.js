@@ -23,7 +23,55 @@ if (accountLink) {
     }).catch(() => {});
 }
 
-document.querySelectorAll('#klonerLink').forEach(link => link.addEventListener('click', event => event.preventDefault()));
+const klonerLinks = document.querySelectorAll('#klonerLink');
+if (klonerLinks.length) {
+    const klonerOverlay = document.createElement('div');
+    klonerOverlay.className = 'kloner-overlay';
+    klonerOverlay.hidden = true;
+    klonerOverlay.setAttribute('role', 'dialog');
+    klonerOverlay.setAttribute('aria-modal', 'true');
+    klonerOverlay.setAttribute('aria-label', 'Klone game');
+
+    const klonerFrame = document.createElement('iframe');
+    klonerFrame.title = 'Klone game';
+    klonerFrame.allow = 'fullscreen';
+    klonerFrame.allowFullscreen = true;
+
+    const klonerClose = document.createElement('button');
+    klonerClose.className = 'kloner-close';
+    klonerClose.type = 'button';
+    klonerClose.textContent = 'Return to Hangout';
+
+    klonerOverlay.append(klonerFrame, klonerClose);
+    document.body.append(klonerOverlay);
+
+    let klonerPreviousFocus = null;
+    const closeKloner = () => {
+        if (klonerOverlay.hidden) return;
+        klonerOverlay.hidden = true;
+        document.body.classList.remove('kloner-active');
+        klonerFrame.src = 'about:blank';
+        if (document.fullscreenElement === klonerOverlay && document.exitFullscreen) {
+            const exitResult = document.exitFullscreen();
+            if (exitResult && typeof exitResult.catch === 'function') exitResult.catch(() => {});
+        }
+        if (klonerPreviousFocus?.isConnected) klonerPreviousFocus.focus({ preventScroll: true });
+        klonerPreviousFocus = null;
+    };
+
+    klonerClose.addEventListener('click', closeKloner);
+    klonerLinks.forEach(link => link.addEventListener('click', event => {
+        event.preventDefault();
+        klonerPreviousFocus = event.currentTarget;
+        klonerFrame.src = event.currentTarget.getAttribute('href') || '/Klone/index.html?embed=1';
+        klonerOverlay.hidden = false;
+        document.body.classList.add('kloner-active');
+        if (typeof klonerOverlay.requestFullscreen === 'function') {
+            const fullscreenResult = klonerOverlay.requestFullscreen();
+            if (fullscreenResult && typeof fullscreenResult.catch === 'function') fullscreenResult.catch(() => {});
+        }
+    }));
+}
 
 if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     let activeSurface = null;

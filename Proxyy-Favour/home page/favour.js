@@ -1,171 +1,136 @@
 const favourApi = async (path, options = {}) => {
-    const response = await fetch('/api' + path, {
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
-        ...options
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Something went wrong.');
-    return data;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+        const response = await fetch('/api' + path, {
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            ...options,
+            signal: controller.signal
+        });
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw new Error('The app returned an unreadable response. Restart Hangout and try again.');
+        }
+        if (!response.ok) throw new Error(data.error || 'Something went wrong.');
+        return data;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error('Hangout did not respond in time. Restart the app and try again.');
+        }
+        if (error instanceof TypeError) {
+            throw new Error('Could not reach Hangout. Restart the app and try again.');
+        }
+        throw error;
+    } finally {
+        clearTimeout(timeout);
+    }
 };
 
-const favourState = { user: null, people: [], favours: [], claims: [] };
-const safeText = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+const homeText = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[char]));
-
-function localDateTime(value) {
+const homeTime = value => {
     const date = new Date(value);
-    return Number.isNaN(date.valueOf()) ? value : date.toLocaleString(undefined, {
-        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-    });
-}
+    return Number.isNaN(date.valueOf()) ? value : date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+};
 
-function renderFavourSummary() {
-    const coins = favourState.user?.coins ?? 0;
-    document.querySelector('#coinBalance').innerHTML = `${coins} <small>FC</small>`;
-    document.querySelector('#balanceCaption').textContent = favourState.user
-        ? `${favourState.user.name} · coins only go up`
-        : 'Sign in to see your Favourcoins';
-    const pending = favourState.favours.filter(item => item.status === 'pending').length;
-    const confirmed = favourState.favours.filter(item => item.status === 'confirmed').length;
-    document.querySelector('#favourCount').textContent = favourState.user ? `${pending} / ${confirmed}` : '—';
-    document.querySelector('#favourCaption').textContent = favourState.user
-        ? 'Awaiting confirmation / confirmed'
-        : 'Favours confirmed by people';
-    const pakodaClaimed = favourState.claims.includes('pakoda');
-    const biryaniClaimed = favourState.claims.includes('biryani');
-    let reward = null;
-    if (!pakodaClaimed) reward = { key: 'pakoda', name: 'Aloo pakoda', cost: 3 };
-    else if (!biryaniClaimed) reward = { key: 'biryani', name: 'Hyderabadi biryani', cost: 5 };
-    document.querySelector('#nextReward').textContent = reward ? reward.name : 'Both treats claimed';
-    document.querySelector('#rewardCaption').textContent = reward
-        ? coins < reward.cost ? `${reward.cost - coins} more coin${reward.cost - coins === 1 ? '' : 's'} · balance stays yours` : `${reward.cost} Favourcoins · balance stays yours`
-        : 'You have claimed both campus treats';
-    const claimButton = document.querySelector('#claimReward');
-    claimButton.disabled = !favourState.user || !reward || coins < reward.cost;
-    claimButton.dataset.reward = reward?.key || '';
-    claimButton.textContent = !favourState.user ? 'Sign in to claim' : !reward ? 'Both treats claimed' : coins < reward.cost ? `Earn ${reward.cost - coins} more` : `Claim ${reward.name}`;
-}
-
-function renderPeople() {
-    const select = document.querySelector('#favourPerson');
-    select.innerHTML = '<option value="">Choose a person</option>' + favourState.people
-        .map(person => `<option value="${person.id}">${safeText(person.name)} · ${safeText(person.department)}</option>`)
-        .join('');
-}
-
-function renderActivity() {
-    const list = document.querySelector('#favourActivity');
-    const count = document.querySelector('#activityCount');
-    count.textContent = favourState.favours.length;
-    if (!favourState.user) {
-        list.innerHTML = '<div class="activity-empty">Sign in to see favours in your circle.</div>';
-        return;
-    }
-    if (!favourState.favours.length) {
-        list.innerHTML = '<div class="activity-empty">No favours yet. Create one for someone in your circle.</div>';
-        return;
-    }
-    list.innerHTML = favourState.favours.map(item => {
-        const incoming = item.beneficiary_id === favourState.user.id;
-        const otherName = incoming ? item.creator_name : item.beneficiary_name;
-        const statusText = item.status === 'confirmed' ? 'Confirmed' : item.status === 'declined' ? 'Not confirmed' : incoming ? 'Needs your confirmation' : 'Waiting for confirmation';
-        const confirm = item.status === 'pending' && incoming
-            ? `<button type="button" class="activity-confirm" data-confirm-favour="${item.id}">Confirm favour</button>` : '';
-        return `<article class="activity-row glass-surface glass-tilt"><div><div class="activity-title">${safeText(item.title)}</div><div class="activity-meta">${incoming ? 'From' : 'For'} ${safeText(otherName)} · ${safeText(localDateTime(item.event_time))}</div>${confirm}</div><span class="activity-state ${item.status}">${statusText}</span></article>`;
-    }).join('');
-    list.querySelectorAll('[data-confirm-favour]').forEach(button => {
-        button.addEventListener('click', async () => {
-            button.disabled = true;
-            try {
-                await favourApi(`/favours/${button.dataset.confirmFavour}/confirm`, { method: 'POST', body: '{}' });
-                await loadFavourData();
-                document.querySelector('#favourMessage').textContent = 'Confirmed. Your Favourcoin balance went up by one. No one’s balance was deducted.';
-            } catch (error) {
-                button.disabled = false;
-                document.querySelector('#favourMessage').textContent = error.message;
-            }
-        });
-    });
-}
-
-async function loadFavourData() {
+async function loadProxyHome() {
+    const activity = document.querySelector('#homeActivity');
+    const message = document.querySelector('#homeMessage');
+    message.textContent = '';
     try {
         const session = await favourApi('/me');
-        favourState.user = session.user;
-        favourState.claims = session.claims || [];
-        if (favourState.user) {
-            const [people, favours] = await Promise.all([favourApi('/people'), favourApi('/favours')]);
-            favourState.people = people.people;
-            favourState.favours = favours.favours;
-            renderPeople();
-            document.querySelector('#authLink').textContent = 'Sign out';
-            document.querySelector('#authLink').href = '#sign-out';
-            document.querySelector('#authLink').onclick = async event => {
-                event.preventDefault();
-                await favourApi('/logout', { method: 'POST', body: '{}' });
-                window.location.reload();
-            };
-            document.querySelector('#favourForm').querySelectorAll('input,select,button').forEach(control => control.disabled = false);
-            document.querySelector('#favourMessage').textContent = 'The person you helped confirms it when it’s done. Their balance goes up; yours never goes down.';
-        } else {
-            favourState.people = [];
-            favourState.favours = [];
-            document.querySelector('#authLink').textContent = 'Sign in';
-            document.querySelector('#authLink').href = '/sign%20up/';
-            document.querySelector('#authLink').onclick = null;
-            document.querySelector('#favourForm').querySelectorAll('input,select,button').forEach(control => control.disabled = true);
-            document.querySelector('#favourMessage').textContent = 'Sign in to create a favour. When they confirm, the other person’s balance goes up.';
+        if (!session.user) {
+            document.querySelector('#homeGivenCount').textContent = '—';
+            document.querySelector('#homeReceivedCount').textContent = '—';
+            document.querySelector('#homePeopleCount').textContent = '—';
+            document.querySelector('#homeGivenCaption').textContent = 'Sign in to see your activity';
+            document.querySelector('#homeReceivedCaption').textContent = 'Each person has a separate balance';
+            document.querySelector('#homePeopleCaption').textContent = 'Balances tracked person by person';
+            activity.innerHTML = '<div class="activity-empty">Sign in to see proxy activity in your circle.</div>';
+            return;
         }
-        renderFavourSummary();
-        renderActivity();
+
+        const [peopleResult, favourResult] = await Promise.all([favourApi('/people'), favourApi('/favours')]);
+        const favours = favourResult.favours;
+        const confirmed = favours.filter(item => item.status === 'confirmed');
+        const given = confirmed.filter(item => item.creator_id === session.user.id).length;
+        const received = confirmed.filter(item => item.beneficiary_id === session.user.id).length;
+        document.querySelector('#homeGivenCount').textContent = given;
+        document.querySelector('#homeReceivedCount').textContent = received;
+        document.querySelector('#homePeopleCount').textContent = peopleResult.people.length;
+        document.querySelector('#homeGivenCaption').textContent = 'Confirmed by them';
+        document.querySelector('#homeReceivedCaption').textContent = 'Confirmed by you';
+        document.querySelector('#homePeopleCaption').textContent = 'Each person has a separate balance';
+
+        const activityTime = value => {
+            const timestamp = new Date(value).valueOf();
+            return Number.isFinite(timestamp) ? timestamp : 0;
+        };
+        const recent = [...favours].sort((a, b) =>
+            activityTime(b.event_time) - activityTime(a.event_time) || Number(b.id) - Number(a.id)
+        ).slice(0, 5);
+        if (!recent.length) {
+            activity.innerHTML = '<div class="activity-empty">No proxies yet. Your activity will appear here.</div>';
+            return;
+        }
+        activity.innerHTML = recent.map(item => {
+            const incoming = item.beneficiary_id === session.user.id;
+            const personId = incoming ? item.creator_id : item.beneficiary_id;
+            const personName = incoming ? item.creator_name : item.beneficiary_name;
+            const detail = incoming ? `Proxy from ${homeText(personName)}` : `Proxy for ${homeText(personName)}`;
+            const state = item.status === 'confirmed' ? 'Confirmed' : item.status === 'declined' ? 'Not confirmed' : incoming ? 'Needs your confirmation' : 'Waiting for confirmation';
+            const direction = incoming ? 'decreases' : 'increases';
+            const balanceDetail = item.status === 'confirmed'
+                ? `Your balance with ${homeText(personName)} ${incoming ? 'decreased' : 'increased'} by 1 FC`
+                : item.status === 'pending'
+                    ? `If confirmed, your balance with ${homeText(personName)} ${direction} by 1 FC`
+                    : 'No coins changed hands';
+            const confirmAction = incoming && item.status === 'pending'
+                ? `<button type="button" class="activity-confirm" data-confirm-proxy="${homeText(item.id)}">Confirm proxy</button>`
+                : '';
+            return `<article class="activity-row glass-surface glass-tilt">
+                <div class="activity-copy"><div class="activity-title">${detail}</div>
+                    <div class="activity-meta">${homeText(homeTime(item.event_time))} · ${balanceDetail}</div></div>
+                <div class="activity-side"><span class="activity-state ${homeText(item.status)}">${state}</span>
+                    <a class="activity-person-link" href="/person.html?id=${personId}">Open ledger</a>${confirmAction}</div>
+            </article>`;
+        }).join('');
     } catch (error) {
-        document.querySelector('#favourMessage').textContent = 'Start the local server to connect the Favourcoin database.';
+        document.querySelector('#homeGivenCount').textContent = '—';
+        document.querySelector('#homeReceivedCount').textContent = '—';
+        document.querySelector('#homePeopleCount').textContent = '—';
+        activity.innerHTML = `<div class="activity-empty">${homeText(error.message)} <button type="button" class="activity-confirm" data-retry-home>Retry</button></div>`;
     }
 }
 
-document.querySelector('#favourForm').addEventListener('submit', async event => {
-    event.preventDefault();
-    const button = document.querySelector('#createFavourButton');
-    button.disabled = true;
+document.querySelector('#homeActivity')?.addEventListener('click', async event => {
+    const retryButton = event.target.closest('[data-retry-home]');
+    if (retryButton) {
+        await loadProxyHome();
+        return;
+    }
+
+    const confirmButton = event.target.closest('[data-confirm-proxy]');
+    if (!confirmButton || confirmButton.disabled) return;
+    confirmButton.disabled = true;
+    confirmButton.textContent = 'Confirming…';
+    const message = document.querySelector('#homeMessage');
     try {
-        await favourApi('/favours', {
+        await favourApi(`/favours/${confirmButton.dataset.confirmProxy}/confirm`, {
             method: 'POST',
-            body: JSON.stringify({
-                beneficiary_id: document.querySelector('#favourPerson').value,
-                event_time: document.querySelector('#favourTime').value
-            })
+            body: '{}'
         });
-        event.target.reset();
-        document.querySelector('#favourMessage').textContent = 'Favour created for that person at the selected time. They can confirm it when it’s done.';
-        await loadFavourData();
+        await loadProxyHome();
+        message.textContent = 'Proxy confirmed. Your shared balance has been updated.';
     } catch (error) {
-        document.querySelector('#favourMessage').textContent = error.message;
-    } finally {
-        button.disabled = false;
+        message.textContent = error.message;
+        confirmButton.disabled = false;
+        confirmButton.textContent = 'Confirm proxy';
     }
 });
 
-document.querySelector('#claimReward').addEventListener('click', async event => {
-    const button = event.currentTarget;
-    if (!button.dataset.reward) return;
-    button.disabled = true;
-    try {
-        await favourApi('/rewards/claim', { method: 'POST', body: JSON.stringify({ reward: button.dataset.reward }) });
-        await loadFavourData();
-        document.querySelector('#favourMessage').textContent = 'Treat claimed. Your Favourcoin balance stays the same.';
-    } catch (error) {
-        document.querySelector('#favourMessage').textContent = error.message;
-        button.disabled = false;
-    }
-});
-
-const dateInput = document.querySelector('#favourTime');
-if (dateInput) {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    dateInput.value = now.toISOString().slice(0, 16);
-}
-loadFavourData();
-
+loadProxyHome();

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>KLONE</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="red">
+
+    <!-- HOME / LANDING STAGE -->
+    <div id="homeStage" class="stage">
+        <div class="grid" aria-hidden="true"></div>
+        <div class="team-watermark" aria-hidden="true">TEAM BEYOND SYNTAX</div>
+
+        <div class="home-top-controls">
+            <button id="openAiModalBtnHome" class="hud-action-btn large-hud-btn" type="button">🤖 KLONE AI</button>
+            <button id="openSettingsModalBtnHome" class="hud-action-btn large-hud-btn" type="button">⚙ SETTINGS</button>
+        </div>
+
+        <h1 class="logo" aria-label="Klone"><span>K</span><span>L</span><span>O</span><span>N</span><span>E</span></h1>
+        <p class="tag">Your actions. Your clones. Your escape.</p>
+        
+        <div class="crowd" aria-hidden="true">
+            <div class="cube you"></div><div class="cube a"></div><div class="cube b"></div><div class="cube c"></div><div class="cube d"></div>
+        </div>
+
+        <nav class="menu" aria-label="Main menu">
+            <button class="btn play" id="start"><span>START GAME</span></button>
+            <button class="btn info" id="how"><span>HOW TO PLAY</span></button>
+            <button class="btn info" id="devs"><span>DEVELOPERS</span></button>
+        </nav>
+        <div class="ver">KLONE v2.0 · BY TEAM BEYOND SYNTAX</div>
+    </div>
+
+    <!-- MAIN GAMEPLAY CONTAINER -->
+    <div id="gamePlayContainer" class="game-container hidden">
+        <header>
+            <h1>K<span>L</span>ONE</h1>
+            <p>Your actions. Your clones. Your escape.</p>
+        </header>
+
+        <main class="compact-main">
+            <div class="game-top-bar">
+                <div class="game-info">
+                    <span id="hudLevelBadge">LEVEL 01</span>
+                    <span class="level-title-text" id="hudLevelTitle">SWAP BOOTCAMP</span>
+                    <span class="hud-stats-pill" id="hudTimerBadge" style="display:inline-block;">⏱ 00:00</span>
+                </div>
+                <div class="top-hud-buttons">
+                    <button id="openAiModalBtn" class="hud-action-btn large-hud-btn" type="button" title="KLONE AI Support">🤖 KLONE AI</button>
+                    <button id="openSettingsModalBtn" class="hud-action-btn large-hud-btn" type="button" title="Game Settings">⚙ SETTINGS</button>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper compact-canvas">
+                <canvas id="gameCanvas" width="960" height="540"></canvas>
+            </div>
+
+            <!-- LEVEL SPECIFIC CONTROLS BAR BELOW PLAYING ZONE -->
+            <div class="clone-dock-panel">
+                <div class="clone-dock-title">ACTIVE LEVEL SHORTCUTS & CONTROLS</div>
+                <div id="levelActiveControlsList" class="level-controls-list"></div>
+            </div>
+
+            <div class="built-by-credit">
+                Built by <strong>BEYOND SYNTAX</strong>
+            </div>
+        </main>
+    </div>
+
+    <!-- LEVEL START SHORTCUT POPUP MODAL -->
+    <div id="levelShortcutModal" class="overlay">
+        <div class="panel" style="text-align:center;">
+            <p class="overlay-label">CHAMBER SHORTCUTS & KEYS</p>
+            <h2>ROUND CONTROLS</h2>
+            <div id="shortcutPopupList" style="margin: 15px 0; text-align: left; display: flex; flex-direction: column; gap: 10px;"></div>
+            <button id="closeLevelShortcutBtn" class="btn play" style="width:100%;font-size:1.3rem;padding:0.6em;"><span>START CHAMBER →</span></button>
+        </div>
+    </div>
+
+    <!-- HOW TO PLAY EXPLAINER MODAL -->
+    <div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="ttl">
+        <div class="modal">
+            <div class="head">
+                <h2 class="disp" id="ttl">HOW TO <b>PLAY</b></h2>
+                <button class="x disp" id="x" aria-label="Close">X</button>
+            </div>
+            <div class="body">
+                <div class="tabs" role="tablist" id="tabs"></div>
+                <div class="modal-content-stage" id="stage">
+
+                    <!-- TAB 1: GOAL -->
+                    <section class="pane" aria-label="Goal">
+                        <h3 class="disp">OBJECTIVE</h3>
+                        <p>Reach the glowing exit portal in every level. Clones copy your moves according to their own rule. Solve the puzzle in as few moves and as fast as possible.</p>
+                        <div class="modal-grid-objs">
+                            <div class="modal-card-item"><div class="ic exit"></div><h4>1. Exit Portal</h4><p>Step on it to finish the level. Clones cannot finish for you.</p></div>
+                            <div class="modal-card-item"><div class="ic plate"></div><h4>2. Turn-Based</h4><p>Every step = 1 move. Clones react right after you move.</p></div>
+                            <div class="modal-card-item"><div class="ic door"></div><h4>3. Star Par</h4><p>Meet par moves and par time to earn up to 3 stars.</p></div>
+                        </div>
+                    </section>
+
+                    <!-- TAB 2: CONTROLS -->
+                    <section class="pane" aria-label="Controls">
+                        <h3 class="disp">KEYBOARD & SHORTCUT CONTROLS</h3>
+                        <p>Actions and clone ability triggers:</p>
+                        <div class="row"><div class="keys"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span><span class="key">&uarr;</span><span class="key">&darr;</span><span class="key">&larr;</span><span class="key">&rarr;</span></div> Move / Push</div>
+                        <div class="row"><span class="key">Q</span> Teleport / Swap Position (Swap Clone)</div>
+                        <div class="row"><span class="key">F</span> Freeze / Unfreeze any clone on a pressure plate</div>
+                        <div class="row"><span class="key w">Hold Shift</span> Move Freeze Clone</div>
+                        <div class="row"><span class="key">X</span> Destroy / Sacrifice Clone</div>
+                        <div class="row"><span class="key">R</span> Restart Level</div>
+                        <div class="row"><span class="key">H</span> Open Klone AI Support</div>
+                    </section>
+
+                    <!-- TAB 3: CLONES -->
+                    <section class="pane" aria-label="Clones">
+                        <h3 class="disp">THE 5 CLONE MECHANICS</h3>
+                        <div class="modal-grid-objs">
+                            <div class="modal-card-item"><h4>1. Swap Clone (L1)</h4><p>Mirrors moves. Press Q to swap. Press F on a plate to freeze.</p></div>
+                            <div class="modal-card-item"><h4>2. Freeze Clone (L2)</h4><p>Moves ONLY while holding Shift. Press F on a plate to freeze.</p></div>
+                            <div class="modal-card-item"><h4>3. Shy Clone (L3)</h4><p>Steps 1 tile away when close. Press F on a plate to freeze.</p></div>
+                            <div class="modal-card-item"><h4>4. Magnet Clone (L4)</h4><p>Mirrors moves and drags crates. Press F on a plate to freeze.</p></div>
+                            <div class="modal-card-item"><h4>5. Sacrifice Clone (L5)</h4><p>Mirrors moves. Press X next to it to destroy, or F on a plate to freeze.</p></div>
+                        </div>
+                    </section>
+
+                    <!-- TAB 4: BOARD -->
+                    <section class="pane" aria-label="Objects">
+                        <h3 class="disp">PRESSURE PLATES & BOARD MECHANICS</h3>
+                        <div class="modal-grid-objs">
+                            <div class="modal-card-item"><div class="ic plate"></div><h4>Pressure Plates</h4><p>Count matches clone count. Active while held down or when a clone is locked on it using F key.</p></div>
+                            <div class="modal-card-item"><div class="ic crate"></div><h4>Crates</h4><p>Push 1 tile into empty space to hold plates permanently.</p></div>
+                            <div class="modal-card-item"><div class="ic door"></div><h4>Doors & Lasers</h4><p>Stay open/disabled while linked plates are pressed.</p></div>
+                            <div class="modal-card-item"><div class="ic exit"></div><h4>Exit Portal</h4><p>Unlocks when all linked door requirements are fulfilled.</p></div>
+                        </div>
+                    </section>
+
+                    <!-- TAB 5: TIPS -->
+                    <section class="pane" aria-label="Tips">
+                        <h3 class="disp">PRO TIPS & KLONE AI</h3>
+                        <div class="tip"><b>1</b><span>Press F when a clone reaches a pressure plate to freeze it down securely.</span></div>
+                        <div class="tip"><b>2</b><span>Check scrambled wall layouts and ensure all matching plates are held down.</span></div>
+                        <div class="tip warn"><b>!</b><span>Stuck? Press <b>H</b> anytime for progressive, spoiler-free hints!</span></div>
+                    </section>
+
+                </div>
+            </div>
+            <div class="foot">
+                <label class="chk"><input type="checkbox" id="never"> Don&rsquo;t show again</label>
+                <div class="dots" id="dots"></div>
+                <button class="b" id="back"><span>BACK</span></button>
+                <button class="b go" id="next"><span>NEXT</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEVELOPERS MODAL -->
+    <div class="overlay" id="devsModal" role="dialog" aria-modal="true">
+        <div class="panel">
+            <button class="close" data-close-devs aria-label="Close">X</button>
+            <p class="overlay-label">CREATORS</p>
+            <h2>DEVELOPERS</h2>
+            <p class="devs-sub">TEAM BEYOND SYNTAX</p>
+            <ul class="devs-list">
+                <li><span class="dev-badge">✦</span> Aaditya Agarwal</li>
+                <li><span class="dev-badge">✦</span> Daksh Khanduja</li>
+                <li><span class="dev-badge">✦</span> Anant Kumar</li>
+                <li><span class="dev-badge">✦</span> Varun Bachlaus</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- KLONE AI HELP PANEL -->
+    <div id="aiSidePanel" class="ai-side-panel" role="dialog" aria-label="KLONE AI Support">
+        <div class="ai-panel-header">
+            <h3 id="aiHeaderTitle">🤖 KLONE AI HELP (3/3)</h3>
+            <button class="close" onclick="closeAIPanel()">X</button>
+        </div>
+        <div id="aiModalContent" class="ai-panel-content">
+            <div class="ai-chat-bubble">Hello! Click "Get Hint" below for progressive hints (max 3 per level).</div>
+        </div>
+        <div class="ai-quick-chips">
+            <button id="aiHintBtn" class="chip-btn" onclick="aiActionGetHint()">💡 Get Hint (3 left)</button>
+            <button class="chip-btn" onclick="aiActionExplainClone()">Explain active clones</button>
+            <button class="chip-btn" onclick="aiActionWhatDoesThisDo()">What does this do?</button>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModalOverlay" class="overlay">
+        <div class="panel">
+            <button class="close" data-close-settings aria-label="Close">X</button>
+            <p class="overlay-label">PREFERENCES</p>
+            <h2>GAME SETTINGS</h2>
+            <div class="settings-content">
+                <div class="setting-row">
+                    <span>AUDIO EFFECTS & MUSIC</span>
+                    <button id="soundToggle" type="button" aria-pressed="true" onclick="setSoundEnabled(typeof soundEnabled !== 'undefined' ? !soundEnabled : true)">🔊 SOUND ON</button>
+                </div>
+
+                <div class="setting-row" style="margin-top: 14px;">
+                    <span>SHOW TIMER IN HUD</span>
+                    <button id="timerDisplayToggle" type="button" aria-pressed="true" onclick="toggleTimerDisplay()">👁 TIMER VISIBLE</button>
+                </div>
+                
+                <div class="setting-row" style="margin-top: 14px;">
+                    <span>BUILD VERSION</span>
+                    <button id="devModeTriggerBtn" type="button" style="background:#222; border:1px dashed var(--accent); color:#aaa; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">v2.1.0 (Build 6)</button>
+                </div>
+
+                <!-- REDESIGNED THEME PICKER PILLS -->
+                <div class="setting-row" style="margin-top: 16px; flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <span>COLOR THEME</span>
+                    <div class="theme-options-grid">
+                        <button class="theme-pill red active" data-theme-val="red" onclick="applyThemeByStr('red', 1)">RED</button>
+                        <button class="theme-pill green" data-theme-val="green" onclick="applyThemeByStr('green', 3)">GREEN</button>
+                        <button class="theme-pill blue" data-theme-val="blue" onclick="applyThemeByStr('blue', 2)">BLUE</button>
+                        <button class="theme-pill purple" data-theme-val="purple" onclick="applyThemeByStr('purple', 4)">PURPLE</button>
+                    </div>
+                </div>
+                
+                <div id="settingsQuickControlsBox" style="margin: 14px 0; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--accent);">
+                    <p style="font-size: 12px; color: var(--accent); font-weight: bold; margin-bottom: 6px;">QUICK CONTROLS</p>
+                    <p style="font-size: 13px; color: #ccc; margin: 3px 0;">• Move: WASD / Arrows</p>
+                    <p style="font-size: 13px; color: #ccc; margin: 3px 0;">• Restart: R | Help: H</p>
+                </div>
+
+                <div class="settings-actions">
+                    <button id="exitToHomeBtn" class="btn play exit-home-btn" type="button"><span>🏠 EXIT TO HOME</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEVEL SELECTION -->
+    <div id="levelOverlay" class="overlay">
+        <div class="panel" style="text-align:center;">
+            <p class="overlay-label" id="levelOverlaySub">SELECT A CHAMBER</p>
+            <h2 id="levelOverlayTitle">CHAMBER SELECTION</h2>
+            <div id="levelCardsGrid" class="fn-cards-grid"></div>
+            <button id="backToStart" class="btn info" style="width:100%;margin-top:10px;font-size:1.2rem;padding:0.6em;"><span>← BACK TO HOME</span></button>
+        </div>
+    </div>
+
+    <!-- LEVEL COMPLETE OVERLAY -->
+    <div id="restartOverlay" class="overlay">
+        <div class="panel" style="text-align:center;">
+            <p class="overlay-label" id="victorySubtitle">TIMELINE INTERRUPTED</p>
+            <h2 id="victoryHeaderTitle">LEVEL COMPLETE</h2>
+            <p id="victoryDetails" style="font-size: 16px; line-height: 1.6;">Your next attempt starts here.</p>
+            <div id="victoryNewBestBanner" style="display:none; margin: 10px 0; padding: 8px; background: rgba(90,255,154,0.15); border: 2px solid #5aff9a; border-radius: 6px; color: #5aff9a; font-weight: bold; font-size: 15px; letter-spacing: 1px;">🎉 NEW PERSONAL BEST!</div>
+            <button id="restartButton" class="btn play" style="width:100%;font-size:1.4rem;padding:0.6em;margin-top:10px;"><span>↻ RESTART LEVEL</span></button>
+        </div>
+    </div>
+
+    <div class="overlay" id="goModal" role="dialog" aria-modal="true">
+        <div class="panel" style="text-align:center">
+            <h2 id="goModalTitle">LEVEL 01</h2>
+            <p class="count" id="count">3</p>
+            <p id="goMsg">Get ready…</p>
+        </div>
+    </div>
+
+    <script src="clones.js?v=2"></script>
+    <script src="game.js?v=2"></script>
+    <script src="ui.js?v=2"></script>
+</body>
+</html>

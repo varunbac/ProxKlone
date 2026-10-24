@@ -15,7 +15,7 @@
 .reward-claim{align-self:flex-start;padding:8px 12px;border:1px solid rgba(255,255,255,.32);border-radius:22px;background:rgba(255,255,255,.15);color:#fff;font:500 .7rem 'Poppins',sans-serif}
 .reward-claim:not(:disabled){cursor:pointer;background:rgba(255,255,255,.9);color:#2b1055}
 .reward-claim:disabled{opacity:.68;cursor:not-allowed}
-.favour-work-area{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;scroll-margin-top:35px}
+.favour-work-area{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;scroll-margin-top:35px}
 .favour-block{padding:25px;min-width:0}
 .block-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
 .block-heading .favour-kicker{margin:0 0 5px}
@@ -66,3 +66,6 @@
 .activity-row.glass-surface{border-color:rgba(239,228,255,.16);border-radius:14px}
 .activity-row.glass-tilt:hover{box-shadow:0 14px 30px rgba(5,2,21,.25),inset 0 1px 0 rgba(255,255,255,.1)}
 @media(prefers-reduced-motion:reduce){.glass-tilt{transition:none!important}}
+.favour-activity .activity-person-link{display:inline-flex;align-items:center;justify-content:center;padding:7px 11px;border:1px solid rgba(244,235,255,.27);border-radius:20px;background:rgba(255,255,255,.09);color:#f3eaff!important;text-decoration:none;font-size:.68rem;white-space:nowrap;transition:background .2s ease,border-color .2s ease}
+.favour-activity .activity-person-link:visited{color:#f3eaff!important}
+.favour-activity .activity-person-link:hover,.favour-activity .activity-person-link:focus-visible{background:rgba(255,255,255,.18);border-color:rgba(244,235,255,.46);outline:none}

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sign Up | Favour</title>
+        <title>Sign Up | Hangout</title>
         <link rel="stylesheet" href="sign%20up/style.css">
-        <link rel="stylesheet" href="auth.css?v=2">
+        <link rel="stylesheet" href="auth.css?v=3">
     </head>
     <body>
         <section>
@@ -21,17 +21,22 @@
                 <h2>Create Account</h2>
                 <div class="inputbox"><input type="text" name="name" autocomplete="name" placeholder="Full name" required></div>
                 <div class="inputbox"><input type="email" name="email" autocomplete="email" placeholder="Campus email" required></div>
-                <div class="inputbox"><input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Password (8 characters minimum)" required></div>
-                <div class="inputbox"><input type="submit" value="Create Account" id="btn"></div>
+                <div class="inputbox"><input type="password" name="password" autocomplete="new-password" minlength="8" maxlength="1024" placeholder="Password (8 characters minimum)" required></div>
+                <div class="inputbox" id="signupCodeWrap" hidden><input type="text" id="signupCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit email code" disabled></div>
+                <p class="auth-help" id="signupCodeNote" hidden></p>
+                <div class="inputbox"><input type="submit" value="Send verification code" id="btn"></div>
+                <div class="group auth-step-actions" id="signupCodeActions" hidden><a href="#" id="resendSignupCode">Resend code</a><a href="#" id="changeSignupEmail">Change email</a></div>
                 <div class="group"><a href="/sign%20up/">Already a member?</a><a href="/sign%20up/">Sign In</a></div>
                 <div class="auth-message" id="signupMessage" aria-live="polite"></div>
             </form>
         </section>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js" integrity="sha512-/6TZODGjYL7M8qb7P6SflJB/nTGE79ed1RfJk3dfm/Ib6JwCT4+tOfrrseEHhxkIhwG8jCl+io6eaiWLS/UX1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
-            let scene = document.getElementById('scene');
-            let parallax = new Parallax(scene);
+            window.initHangoutParallax = function () {
+                const scene = document.getElementById('scene');
+                if (window.Parallax && scene) new window.Parallax(scene);
+            };
         </script>
-        <script src="/auth.js"></script>
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js" integrity="sha512-/6TZODGjYL7M8qb7P6SflJB/nTGE79ed1RfJk3dfm/Ib6JwCT4+tOfrrseEHhxkIhwG8jCl+io6eaiWLS/UX1w==" crossorigin="anonymous" referrerpolicy="no-referrer" onload="window.initHangoutParallax()"></script>
+        <script src="/auth.js?v=3"></script>
     </body>
 </html>

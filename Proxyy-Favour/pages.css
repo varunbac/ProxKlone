@@ -15,7 +15,6 @@
 .page-form button{grid-column:1/-1;justify-self:start;border:0;border-radius:30px;padding:12px 22px;background:#fff;color:#2b1055;font:600 .95rem 'Poppins',sans-serif;cursor:pointer}
 .page-form button:disabled{opacity:.6;cursor:wait}
 .page-message{min-height:22px;margin:15px 0 0;color:#d8c8f2;font-size:.84rem;line-height:1.5}
-.page-activity{display:grid;gap:11px;margin-top:26px}
 .people-list{display:grid;gap:11px}
 .page-glass.glass-surface{background:linear-gradient(140deg,rgba(225,207,249,.18),rgba(139,106,177,.13) 55%,rgba(48,27,68,.42));box-shadow:0 22px 54px rgba(5,2,21,.24),inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(212,188,255,.07)}
 .person-row.glass-surface{background:linear-gradient(135deg,rgba(30,18,44,.64),rgba(44,28,62,.58));border-color:rgba(235,221,252,.19);border-top-color:rgba(245,235,255,.24);box-shadow:0 12px 28px rgba(5,2,21,.16),inset 0 1px 0 rgba(255,255,255,.07)}
@@ -29,3 +28,42 @@
 .page-login-note a{color:#fff}
 .subpage-footer{width:min(1080px,calc(100% - 48px));margin:-32px auto 0;padding:0 0 24px;color:#c6bfd7;font-size:.75rem}
 @media(max-width:700px){.subpage-main{width:calc(100% - 32px);padding:118px 0 70px}.page-glass{padding:20px}.page-form{grid-template-columns:1fr}.page-form button{grid-column:auto}.person-row{grid-template-columns:40px minmax(0,1fr) auto;gap:12px;min-height:74px;padding:14px;border-radius:14px}.person-name{font-size:.94rem}.person-department{font-size:.75rem}.person-coins{font-size:.86rem}.subpage-footer{width:calc(100% - 32px)}header{padding:22px!important}header ul{flex-wrap:wrap;gap:4px}header ul li{margin-left:3px!important}header ul li a{padding:6px 9px!important;font-size:.8rem}}
+.person-link{color:inherit;text-decoration:none;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.person-link:hover,.person-link:focus-visible{transform:translateY(-2px);outline:none}
+.person-link:focus-visible{box-shadow:0 0 0 3px rgba(231,216,255,.28),0 19px 36px rgba(5,2,21,.24)}
+.person-copy{display:grid;gap:4px;min-width:0}
+.person-department{margin-top:0}
+.person-coins{text-align:right}
+.person-coins small{display:block;margin-top:3px;color:#c6bfd7;font-size:.66rem;letter-spacing:.04em}
+.person-coins.positive{color:#f1dc9a}
+.person-coins.negative{color:#e8a9b3}
+.person-coins.even{color:#d9d1e5}
+.relationship-main .subpage-heading{margin-top:18px}
+.relationship-back{display:inline-block;color:#d9c9ed;text-decoration:none;font-size:.82rem}
+.relationship-back:hover{text-decoration:underline}
+.relationship-stats{margin:28px 0}
+.relationship-stats .glass-number{font-size:2.4rem}
+.relationship-treats{margin-top:22px}
+.relationship-main section.page-glass{height:auto;min-height:0;display:block;overflow:visible;padding:28px}
+.relationship-main section.page-glass::before{content:none}
+.relationship-section-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px}
+.relationship-section-heading h2{margin:0}
+.relationship-available{display:grid;text-align:right;color:#f1dc9a;font-size:1.2rem;font-weight:600;white-space:nowrap}
+.relationship-available small{margin-top:4px;color:#d0c6dc;font-size:.65rem;font-weight:400}
+.relationship-note{max-width:760px;margin:0 0 18px;color:#d5cde1;font-size:.86rem;line-height:1.6}
+.relationship-treat-action{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.relationship-treat-action button{grid-column:auto}
+.relationship-treat-action span{color:#d1c8df;font-size:.76rem}
+.page-message:empty{display:none}
+.page-message a{color:#fff}
+.activity-copy{min-width:0}
+.activity-side{display:grid;justify-items:end;gap:7px}
+.activity-person-link{color:#d8c8f2;font-size:.72rem;text-decoration:none}
+.activity-person-link:hover{text-decoration:underline}
+.activity-actions{display:flex;gap:7px;flex-wrap:wrap}
+.activity-dismiss{display:block;margin:7px 0 0;padding:6px 10px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(22,12,39,.32);color:#ded7e8;font:500 .68rem 'Poppins',sans-serif;cursor:pointer}
+.activity-dismiss:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4)}
+.activity-confirm:disabled,.activity-dismiss:disabled{opacity:.55;cursor:wait}
+.activity-state.fulfilled{color:#b8e4ca}
+.activity-state.declined,.activity-state.cancelled{color:#d7b4bd}
+@media(max-width:700px){.person-row{grid-template-columns:34px minmax(0,1fr) auto}.relationship-stats{grid-template-columns:1fr;margin:20px 0}.relationship-stats .glass-card:last-child{grid-column:auto}.relationship-main section.page-glass{padding:20px}.relationship-section-heading{flex-direction:column;align-items:stretch}.relationship-available{align-self:flex-start;text-align:left;font-size:1rem}.activity-row{grid-template-columns:minmax(0,1fr)}.activity-side{justify-items:start}.person-coins small{font-size:.58rem}}

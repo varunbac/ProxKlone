@@ -1,20 +1,21 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Favour | IIT Roorkee</title>
+        <title>Hangout | IIT Roorkee</title>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <link rel="stylesheet" type="text/css" href="favour.css?v=6">
+        <link rel="stylesheet" type="text/css" href="favour.css?v=9">
+        <link rel="stylesheet" type="text/css" href="../kloner.css?v=2">
     </head>
     <body>
         <header>
             <a href="#top" class="logo">Hangout</a>
             <ul>
                 <li><a href="#top" class="active">Home</a></li>
-                <li><a href="../create.html">Create a Favour</a></li>
+                <li><a href="../create.html">Mark a proxy</a></li>
                 <li><a href="../people.html">People</a></li>
-                <li><a href="#" id="klonerLink">Kloner</a></li>
+                <li><a href="/Klone/index.html?embed=1&amp;v=2" id="klonerLink">Klone</a></li>
                 <li><a href="/sign%20up/" id="accountLink">Sign In</a></li>
             </ul>
         </header>
@@ -29,47 +30,38 @@
         <div class="sec" id="sec">
             <div class="favour-shell">
                 <div class="favour-intro">
-                    <div class="favour-kicker">IIT Roorkee · the kindness ledger</div>
+                    <div class="favour-kicker">IIT Roorkee · the proxy ledger</div>
                     <h2>Good turns<br>come around.</h2>
-                    <p>Pick the person and the time. When they confirm the favour, their Favourcoin balance grows. Yours never goes down.</p>
+                    <p>Show up for each other.</p>
                 </div>
 
                 <div class="glass-grid" id="work">
                     <article class="glass-card glass-surface glass-tilt">
-                        <div class="glass-label">Your balance</div>
-                        <div class="glass-number" id="coinBalance">0 <small>FC</small></div>
-                        <div class="glass-foot" id="balanceCaption">Sign in to see your Favourcoins</div>
+                        <div class="glass-label">Proxies covered</div>
+                        <div class="glass-number" id="homeGivenCount">—</div>
+                        <div class="glass-foot" id="homeGivenCaption">Confirmed by them</div>
                     </article>
                     <article class="glass-card glass-surface glass-tilt">
-                        <div class="glass-label">Favour activity</div>
-                        <div class="glass-number" id="favourCount">—</div>
-                        <div class="glass-foot" id="favourCaption">Favours confirmed by people</div>
+                        <div class="glass-label">Proxies received</div>
+                        <div class="glass-number" id="homeReceivedCount">—</div>
+                        <div class="glass-foot" id="homeReceivedCaption">Confirmed by you</div>
                     </article>
                     <article class="glass-card glass-surface glass-tilt">
-                        <div class="glass-label">Next campus treat</div>
-                        <div class="glass-number glass-treat" id="nextReward">Aloo pakoda</div>
-                        <div class="glass-foot" id="rewardCaption">3 Favourcoins · balance stays yours</div>
-                        <button type="button" class="reward-claim" id="claimReward" disabled>Earn 3 Favourcoins to unlock</button>
+                        <div class="glass-label">People in your circle</div>
+                        <div class="glass-number" id="homePeopleCount">—</div>
+                        <div class="glass-foot" id="homePeopleCaption">Balances tracked person by person</div>
                     </article>
                 </div>
 
                 <div class="favour-work-area">
-                    <div class="favour-block glass-surface glass-tilt">
-                        <div class="block-heading"><div><div class="favour-kicker">Make it count</div><h3>Create a favour</h3></div><a class="glass-link" href="/sign%20up/" id="authLink">Sign in</a></div>
-                        <form id="favourForm" class="favour-form">
-                            <label>Who is it for?<select id="favourPerson" required><option value="">Choose a person</option></select></label>
-                            <label>When is the favour?<input id="favourTime" type="datetime-local" required></label>
-                            <button type="submit" id="createFavourButton">Create a favour</button>
-                        </form>
-                        <p class="form-note" id="favourMessage">The other person confirms it when the favour is done. Their balance goes up; yours never goes down.</p>
-                    </div>
-                    <div class="favour-block glass-surface glass-tilt" id="contact">
-                        <div class="block-heading"><div><div class="favour-kicker">Your people</div><h3>Favour activity</h3></div><span class="activity-count" id="activityCount">0</span></div>
-                        <div class="favour-activity" id="favourActivity"><div class="activity-empty">Sign in to see favours in your circle.</div></div>
+                    <div class="favour-block glass-surface" id="contact">
+                        <div class="block-heading"><div><h3>Proxy activity</h3></div><a class="glass-link" href="../people.html">People</a></div>
+                        <div class="favour-activity" id="homeActivity"><div class="activity-empty">Loading recent activity…</div></div>
+                        <p class="page-message" id="homeMessage" aria-live="polite"></p>
                     </div>
                 </div>
 
-                <div class="treat-strip glass-surface glass-tilt"><div><div class="favour-kicker">Earn good things</div><p>3 coins for aloo pakoda · 5 coins for Hyderabadi biryani</p></div><a class="glass-link" href="/sign%20up/">Open your account</a></div>
+                <div class="treat-strip glass-surface glass-tilt"><div><p>Good turns earn good treats.</p></div><a class="glass-link" href="../people.html">Open your circle</a></div>
             </div>
         </div>
         <script>
@@ -92,7 +84,7 @@
                 header.style.top= value*0.5+ 'px';
             })
         </script>
-        <script src="favour.js?v=6"></script>
+        <script src="favour.js?v=11"></script>
         <script src="../site.js"></script>
     </body>
 </html>  

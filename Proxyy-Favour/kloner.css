@@ -1,0 +1,7 @@
+.kloner-overlay[hidden]{display:none!important}
+.kloner-overlay{position:fixed;inset:0;z-index:10000;isolation:isolate;background:#1c0522}
+.kloner-overlay iframe{display:block;width:100%;height:100%;border:0;background:#080d18}
+.kloner-close{position:absolute;z-index:1;top:max(16px,env(safe-area-inset-top));left:max(16px,env(safe-area-inset-left));right:auto;padding:11px 18px;border:1px solid rgba(255,255,255,.32);border-radius:999px;background:rgba(46,25,57,.78);color:#fff;box-shadow:0 10px 30px rgba(5,2,21,.28),inset 0 1px rgba(255,255,255,.15);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);font:500 .9rem 'Poppins',sans-serif;cursor:pointer}
+.kloner-close:hover,.kloner-close:focus-visible{background:rgba(72,46,87,.92);border-color:rgba(255,255,255,.55);outline:2px solid rgba(232,218,255,.42);outline-offset:3px}
+body.kloner-active{overflow:hidden}
+@media(max-width:600px){.kloner-close{top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));padding:9px 13px;font-size:.8rem}}
