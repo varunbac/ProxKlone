@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Favour | Favour</title>
+    <link rel="stylesheet" href="home%20page/style.css">
+    <link rel="stylesheet" href="home%20page/favour.css?v=6">
+    <link rel="stylesheet" href="pages.css?v=3">
+</head>
+<body class="subpage-body">
+    <header>
+        <a href="/home%20page/" class="logo">Favour</a>
+        <ul>
+            <li><a href="/home%20page/">Home</a></li>
+            <li><a href="/create.html" class="active">Create a Favour</a></li>
+            <li><a href="/people.html">People</a></li>
+            <li><a href="#" id="klonerLink">Kloner</a></li>
+            <li><a href="/sign%20up/" id="accountLink">Sign In</a></li>
+        </ul>
+    </header>
+    <main class="subpage-main">
+        <div class="subpage-heading">
+            <div class="favour-kicker">A little goes a long way</div>
+            <h1>Create a Favour</h1>
+            <p>Choose the person and when it happened. They confirm it when the favour is done, and their Favourcoin balance goes up. Yours never goes down.</p>
+        </div>
+        <div class="page-glass glass-surface glass-tilt">
+            <h2>Who did you help?</h2>
+            <form class="page-form" id="createPageForm">
+                <label>Choose a person<select id="createPerson" required><option value="">Choose a person</option></select></label>
+                <label>When did it happen?<input id="createTime" type="datetime-local" required></label>
+                <button type="submit" id="createPageButton">Create a Favour</button>
+            </form>
+            <div class="page-message" id="createPageMessage" aria-live="polite">The record shows who it was for and when.</div>
+        </div>
+        <div class="page-activity" id="createPageActivity"></div>
+    </main>
+    <footer class="subpage-footer">Favour · IIT Roorkee</footer>
+    <script src="site.js"></script>
+    <script src="pages.js"></script>
+</body>
+</html>

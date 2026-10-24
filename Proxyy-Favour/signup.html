@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up | Favour</title>
+        <link rel="stylesheet" href="sign%20up/style.css">
+        <link rel="stylesheet" href="auth.css?v=2">
+    </head>
+    <body>
+        <section>
+            <div class="container">
+                <div id="scene">
+                    <div class="Layer" data-depth-x="-0.5" data-depth-y="-0.25"><img src="sign%20up/moon.png"></div>
+                    <div class="Layer" data-depth-x="0.15"><img src="sign%20up/mountains01.png"></div>
+                    <div class="Layer" data-depth-x="0.25"><img src="sign%20up/mountains02.png"></div>
+                    <div class="Layer" data-depth-x="-0.25"><img src="sign%20up/road.png"></div>
+                </div>
+            </div>
+            <form class="login" id="signupForm">
+                <h2>Create Account</h2>
+                <div class="inputbox"><input type="text" name="name" autocomplete="name" placeholder="Full name" required></div>
+                <div class="inputbox"><input type="email" name="email" autocomplete="email" placeholder="Campus email" required></div>
+                <div class="inputbox"><input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Password (8 characters minimum)" required></div>
+                <div class="inputbox"><input type="submit" value="Create Account" id="btn"></div>
+                <div class="group"><a href="/sign%20up/">Already a member?</a><a href="/sign%20up/">Sign In</a></div>
+                <div class="auth-message" id="signupMessage" aria-live="polite"></div>
+            </form>
+        </section>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js" integrity="sha512-/6TZODGjYL7M8qb7P6SflJB/nTGE79ed1RfJk3dfm/Ib6JwCT4+tOfrrseEHhxkIhwG8jCl+io6eaiWLS/UX1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            let scene = document.getElementById('scene');
+            let parallax = new Parallax(scene);
+        </script>
+        <script src="/auth.js"></script>
+    </body>
+</html>

@@ -1,0 +1,9 @@
+/* Form feedback and narrow-screen layout. Original scene and parallax styling are unchanged. */
+.login{max-width:calc(100vw - 28px);max-height:calc(100vh - 28px);overflow-y:auto}
+.login .auth-message{min-height:0;color:#fff;font-size:.82rem;line-height:1.4;text-align:center;margin-top:-13px}
+.login .auth-message:empty{display:none}
+.login .inputbox input[type="email"],.login .inputbox input[type="text"],.login .inputbox input[type="password"]{min-width:0}
+.login .inputbox input:not([type="submit"]){background:rgba(5,7,20,.72)!important;color:#fff!important;border:1px solid rgba(0,0,0,.6)!important;border-radius:9px;box-shadow:inset 0 0 15px rgba(0,0,0,.25)!important}
+.login .inputbox input:not([type="submit"])::placeholder{color:rgba(255,255,255,.62);opacity:1}
+.login .inputbox input:not([type="submit"]):-webkit-autofill,.login .inputbox input:not([type="submit"]):-webkit-autofill:hover,.login .inputbox input:not([type="submit"]):-webkit-autofill:focus{-webkit-text-fill-color:#fff!important;caret-color:#fff;-webkit-box-shadow:0 0 0 1000px #101126 inset!important;box-shadow:0 0 0 1000px #101126 inset!important;transition:background-color 9999s ease-out 0s}
+@media(max-width:600px){.login{padding:28px 22px!important;gap:17px!important}.login h2{font-size:2rem!important;margin-bottom:3px!important}.login .group a{font-size:.85rem!important}.login .inputbox input{font-size:1rem!important;padding:12px 14px!important}}

@@ -1,0 +1,68 @@
+/* Additional Favour content only. The original parallax selectors and animation remain untouched. */
+.favour-shell{width:min(1180px,100%);margin:0 auto;color:#fff}
+.favour-intro{max-width:720px;margin:0 0 42px}
+.favour-kicker{font-size:.72rem;letter-spacing:.19em;text-transform:uppercase;color:#b5b5dc;margin-bottom:12px}
+.favour-intro h2{font-size:clamp(3rem,7vw,5.4rem);line-height:.98;letter-spacing:-.055em;margin:0 0 20px}
+.favour-intro p{font-size:1.05rem;line-height:1.8;max-width:650px;color:#ddd8e9;margin:0}
+.glass-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:38px 0 54px}
+.glass-card,.favour-block,.treat-strip{background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.19);border-top-color:rgba(255,255,255,.36);border-left-color:rgba(255,255,255,.29);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 55px rgba(5,2,21,.2);border-radius:20px}
+.glass-card{min-height:168px;padding:24px 25px;display:flex;flex-direction:column;justify-content:space-between}
+.glass-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#c8c3df}
+.glass-number{font-size:3.35rem;font-weight:600;letter-spacing:-.06em;line-height:1.1;color:#fff}
+.glass-number small{font-size:1rem;letter-spacing:.08em;color:#c6c0e2}
+.glass-treat{font-size:1.7rem;letter-spacing:-.03em}
+.glass-foot{font-size:.78rem;color:#d2cde1;line-height:1.5}
+.reward-claim{align-self:flex-start;padding:8px 12px;border:1px solid rgba(255,255,255,.32);border-radius:22px;background:rgba(255,255,255,.15);color:#fff;font:500 .7rem 'Poppins',sans-serif}
+.reward-claim:not(:disabled){cursor:pointer;background:rgba(255,255,255,.9);color:#2b1055}
+.reward-claim:disabled{opacity:.68;cursor:not-allowed}
+.favour-work-area{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;scroll-margin-top:35px}
+.favour-block{padding:25px;min-width:0}
+.block-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.block-heading .favour-kicker{margin:0 0 5px}
+.block-heading h3{font-size:1.65rem;line-height:1.15;margin:0;color:#fff}
+.glass-link{display:inline-block;color:#fff;text-decoration:none;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.36);padding:9px 14px;border-radius:24px;font-size:.78rem;white-space:nowrap;transition:background .2s}
+.glass-link:hover{background:rgba(255,255,255,.24)}
+.favour-form{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.favour-form label{font-size:.72rem;letter-spacing:.05em;color:#d5d1e2;display:grid;gap:7px}
+.favour-form input,.favour-form select{width:100%;min-width:0;height:43px;padding:0 12px;color:#fff;background:rgba(13,8,37,.46);border:1px solid rgba(255,255,255,.22);border-radius:8px;outline:none;font:400 .82rem 'Poppins',sans-serif}
+.favour-form select option{background:#211440;color:#fff}
+.favour-form input::placeholder{color:#b8b1ca}
+.favour-form input:focus,.favour-form select:focus{border-color:#d9c0ff;box-shadow:0 0 0 3px rgba(204,176,255,.12)}
+.favour-form button{grid-column:1/-1;justify-self:start;padding:10px 17px;color:#2b1055;background:#fff;border:0;border-radius:24px;font:600 .82rem 'Poppins',sans-serif;cursor:pointer}
+.favour-form button:hover{background:#e9e4f4}
+.favour-form button:disabled{opacity:.55;cursor:wait}
+.form-note{font-size:.73rem!important;line-height:1.6!important;color:#c8c2d8!important;margin:13px 0 0!important}
+.activity-count{font:500 .78rem 'Poppins',sans-serif;color:#e0d9ee;border:1px solid rgba(255,255,255,.24);padding:5px 10px;border-radius:20px}
+.favour-activity{display:grid;gap:9px}
+.activity-empty{color:#ccc5d9;font-size:.82rem;padding:12px 0}
+.activity-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 13px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(18,11,44,.26)}
+.activity-title{color:#fff;font-size:.83rem;font-weight:500;line-height:1.45}
+.activity-meta{color:#c3bdd2;font-size:.68rem;margin-top:5px;line-height:1.5}
+.activity-state{font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;color:#e5d7ae;white-space:nowrap}
+.activity-state.confirmed{color:#b8e4ca}
+.activity-confirm{display:block;margin:7px 0 0;padding:6px 10px;border:1px solid rgba(255,255,255,.4);border-radius:18px;background:rgba(255,255,255,.13);color:#fff;font:500 .68rem 'Poppins',sans-serif;cursor:pointer}
+.activity-confirm:hover{background:rgba(255,255,255,.24)}
+.treat-strip{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 23px;margin-top:18px}
+.treat-strip .favour-kicker{margin:0 0 5px}
+.treat-strip p{margin:0;color:#eee8f4;font-size:.83rem}
+.glass-grid{perspective:1200px;perspective-origin:center}
+.glass-card{position:relative;overflow:hidden;isolation:isolate;transform-style:preserve-3d;transition:transform .08s linear,box-shadow .22s ease,border-color .22s ease;will-change:transform}
+.glass-card::before,.glass-card::after{content:none}
+.glass-card>*{position:relative;z-index:1}
+.glass-card:hover{border-color:rgba(238,231,255,.3);box-shadow:0 22px 48px rgba(5,2,21,.28)}
+.favour-form input,.favour-form select{background:rgba(9,6,27,.38);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.26);border-radius:9px;box-shadow:inset 0 1px rgba(255,255,255,.07),inset 0 0 15px rgba(8,4,24,.22),0 8px 20px rgba(4,2,18,.16);font:500 .88rem 'Poppins',sans-serif;letter-spacing:.01em}
+.favour-form input:focus,.favour-form select:focus{border-color:rgba(235,226,255,.7);box-shadow:inset 0 1px rgba(255,255,255,.1),0 0 0 3px rgba(207,187,255,.13),0 10px 24px rgba(4,2,18,.2)}
+@media(prefers-reduced-motion:reduce){.glass-card,.glass-card>*{transition:none!important}}
+@media(max-width:850px){.favour-work-area{grid-template-columns:1fr}.glass-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.glass-card:last-child{grid-column:1/-1}.glass-card{padding:19px;min-height:150px}}
+@media(max-width:850px){header{padding:20px 24px;gap:10px}header .logo{font-size:1.4em;letter-spacing:1.2px;white-space:nowrap}header ul{flex-wrap:nowrap;min-width:0}header ul li{margin-left:4px}header ul li a{font-size:.72rem;padding:5px 8px;white-space:nowrap}}
+@media(max-width:600px){header{padding:16px!important;align-items:flex-start;flex-direction:column;gap:8px}header .logo{font-size:1.3em}header ul{width:100%;justify-content:flex-start;flex-wrap:wrap;gap:5px}header ul li{margin-left:0!important}header ul li a{font-size:.72rem;padding:5px 8px!important}}
+@media(max-width:600px){.sec{padding:76px 22px!important}.favour-intro{margin-bottom:30px}.favour-intro h2{font-size:3.3rem}.favour-intro p{font-size:.9rem}.glass-grid{grid-template-columns:1fr;margin:28px 0 36px}.glass-card:last-child{grid-column:auto}.glass-card{min-height:132px}.favour-block{padding:19px}.favour-form{grid-template-columns:1fr}.treat-strip{align-items:flex-start;flex-direction:column;padding:17px}.block-heading h3{font-size:1.4rem}}
+
+/* One purple glass language for dashboard, activity and leaderboard surfaces. */
+.glass-surface{background:linear-gradient(138deg,rgba(237,225,255,.14) 0%,rgba(156,125,194,.105) 46%,rgba(50,27,70,.42) 100%);border:1px solid rgba(240,229,255,.19);border-top-color:rgba(248,241,255,.3);backdrop-filter:blur(20px) saturate(125%);-webkit-backdrop-filter:blur(20px) saturate(125%);box-shadow:0 18px 42px rgba(5,2,21,.24),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 0 rgba(212,188,255,.06)}
+.glass-tilt{position:relative;transform-style:preserve-3d;transition:transform .08s linear,box-shadow .2s ease,border-color .2s ease;}
+.glass-tilt:hover{z-index:2;border-color:rgba(244,235,255,.29);box-shadow:0 22px 48px rgba(5,2,21,.3),inset 0 1px 0 rgba(255,255,255,.12)}
+.glass-card::before,.glass-card::after,.glass-surface::before,.glass-surface::after{content:none!important}
+.activity-row.glass-surface{border-color:rgba(239,228,255,.16);border-radius:14px}
+.activity-row.glass-tilt:hover{box-shadow:0 14px 30px rgba(5,2,21,.25),inset 0 1px 0 rgba(255,255,255,.1)}
+@media(prefers-reduced-motion:reduce){.glass-tilt{transition:none!important}}
