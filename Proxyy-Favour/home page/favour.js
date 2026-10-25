@@ -82,13 +82,15 @@ async function loadProxyHome() {
             const personId = incoming ? item.creator_id : item.beneficiary_id;
             const personName = incoming ? item.creator_name : item.beneficiary_name;
             const detail = incoming ? `Proxy from ${homeText(personName)}` : `Proxy for ${homeText(personName)}`;
-            const state = item.status === 'confirmed' ? 'Confirmed' : item.status === 'declined' ? 'Not confirmed' : incoming ? 'Needs your confirmation' : 'Waiting for confirmation';
+            const state = item.status === 'confirmed' ? 'Confirmed' : item.status === 'declined' ? 'Not confirmed' : incoming ? 'Needs your confirmation' : `Waiting on ${homeText(personName)}`;
             const direction = incoming ? 'decreases' : 'increases';
             const balanceDetail = item.status === 'confirmed'
-                ? `Your balance with ${homeText(personName)} ${incoming ? 'decreased' : 'increased'} by 1 FC`
+                ? `Your balance with ${homeText(personName)} ${incoming ? 'decreased' : 'increased'} by 1 P ₱`
                 : item.status === 'pending'
-                    ? `If confirmed, your balance with ${homeText(personName)} ${direction} by 1 FC`
-                    : 'No coins changed hands';
+                    ? incoming
+                        ? `If confirmed, your balance with ${homeText(personName)} ${direction} by 1 P ₱`
+                        : `${homeText(personName)} needs to confirm. If confirmed, your balance with them increases by 1 P ₱`
+                    : 'No ProxyPaisa changed hands';
             const confirmAction = incoming && item.status === 'pending'
                 ? `<button type="button" class="activity-confirm" data-confirm-proxy="${homeText(item.id)}">Confirm proxy</button>`
                 : '';

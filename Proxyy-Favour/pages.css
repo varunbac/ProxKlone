@@ -15,6 +15,7 @@
 .page-form button{grid-column:1/-1;justify-self:start;border:0;border-radius:30px;padding:12px 22px;background:#fff;color:#2b1055;font:600 .95rem 'Poppins',sans-serif;cursor:pointer}
 .page-form button:disabled{opacity:.6;cursor:wait}
 .page-message{min-height:22px;margin:15px 0 0;color:#d8c8f2;font-size:.84rem;line-height:1.5}
+.page-message.balance-warning{padding:11px 14px;border:1px solid rgba(244,214,145,.48);border-radius:12px;background:rgba(165,116,42,.15);color:#f3dda7}
 .people-list{display:grid;gap:11px}
 .page-glass.glass-surface{background:linear-gradient(140deg,rgba(225,207,249,.18),rgba(139,106,177,.13) 55%,rgba(48,27,68,.42));box-shadow:0 22px 54px rgba(5,2,21,.24),inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(212,188,255,.07)}
 .person-row.glass-surface{background:linear-gradient(135deg,rgba(30,18,44,.64),rgba(44,28,62,.58));border-color:rgba(235,221,252,.19);border-top-color:rgba(245,235,255,.24);box-shadow:0 12px 28px rgba(5,2,21,.16),inset 0 1px 0 rgba(255,255,255,.07)}
@@ -54,6 +55,8 @@
 .relationship-treat-action{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .relationship-treat-action button{grid-column:auto}
 .relationship-treat-action span{color:#d1c8df;font-size:.76rem}
+.custom-treat-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.custom-treat-fields[hidden]{display:none!important}
 .page-message:empty{display:none}
 .page-message a{color:#fff}
 .activity-copy{min-width:0}
@@ -67,3 +70,4 @@
 .activity-state.fulfilled{color:#b8e4ca}
 .activity-state.declined,.activity-state.cancelled{color:#d7b4bd}
 @media(max-width:700px){.person-row{grid-template-columns:34px minmax(0,1fr) auto}.relationship-stats{grid-template-columns:1fr;margin:20px 0}.relationship-stats .glass-card:last-child{grid-column:auto}.relationship-main section.page-glass{padding:20px}.relationship-section-heading{flex-direction:column;align-items:stretch}.relationship-available{align-self:flex-start;text-align:left;font-size:1rem}.activity-row{grid-template-columns:minmax(0,1fr)}.activity-side{justify-items:start}.person-coins small{font-size:.58rem}}
+@media(max-width:700px){.custom-treat-fields{grid-template-columns:1fr}}

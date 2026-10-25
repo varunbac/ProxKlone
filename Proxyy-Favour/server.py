@@ -134,13 +134,13 @@ def otp_digest(db, purpose, email, code):
     value = "%s:%s:%s" % (purpose, email.lower(), code)
     return hmac.new(pepper.encode("utf-8"), value.encode("utf-8"), hashlib.sha256).hexdigest()
 TREATS = (
-    {"key": "pakoda", "name": "Aloo pakoda", "cost": 3},
+    {"key": "pakoda", "name": "Aloo pakoda", "cost": 2},
     {"key": "biryani", "name": "Hyderabadi biryani", "cost": 5},
     {"key": "chai-samosa", "name": "Chai and samosa", "cost": 2},
-    {"key": "midnight-maggi", "name": "Midnight Maggi", "cost": 4},
+    {"key": "midnight-maggi", "name": "Midnight Maggi", "cost": 3},
     {"key": "momos", "name": "Steamed momos", "cost": 4},
-    {"key": "masala-dosa", "name": "Masala dosa", "cost": 5},
-    {"key": "chole-bhature", "name": "Chole bhature", "cost": 6},
+    {"key": "masala-dosa", "name": "Masala dosa", "cost": 4},
+    {"key": "chole-bhature", "name": "Chole bhature", "cost": 4},
     {"key": "campus-pizza", "name": "Campus pizza treat", "cost": 7},
 )
 TREAT_BY_KEY = {treat["key"]: treat for treat in TREATS}
@@ -219,7 +219,7 @@ def initialize_database():
                 provider_id INTEGER NOT NULL REFERENCES users(id),
                 treat_key TEXT NOT NULL,
                 treat_name TEXT NOT NULL,
-                cost INTEGER NOT NULL CHECK(cost BETWEEN 2 AND 7),
+                cost INTEGER NOT NULL CHECK(cost > 0),
                 status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','fulfilled','declined','cancelled')),
                 requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 fulfilled_at TEXT
@@ -243,6 +243,29 @@ def initialize_database():
                 last_sent_at INTEGER NOT NULL
             );
         """)
+        treat_schema = db.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' AND name='treat_redemptions'"
+        ).fetchone()
+        if treat_schema and "BETWEEN 2 AND 7" in (treat_schema["sql"] or "").upper():
+            # Preserve existing requests while removing the old 2–7 price limit.
+            db.execute("BEGIN IMMEDIATE")
+            db.execute("ALTER TABLE treat_redemptions RENAME TO treat_redemptions_legacy")
+            db.execute("""CREATE TABLE treat_redemptions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                requester_id INTEGER NOT NULL REFERENCES users(id),
+                provider_id INTEGER NOT NULL REFERENCES users(id),
+                treat_key TEXT NOT NULL,
+                treat_name TEXT NOT NULL,
+                cost INTEGER NOT NULL CHECK(cost > 0),
+                status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','fulfilled','declined','cancelled')),
+                requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                fulfilled_at TEXT
+            )""")
+            db.execute("""INSERT INTO treat_redemptions
+                (id,requester_id,provider_id,treat_key,treat_name,cost,status,requested_at,fulfilled_at)
+                SELECT id,requester_id,provider_id,treat_key,treat_name,cost,status,requested_at,fulfilled_at
+                FROM treat_redemptions_legacy""")
+            db.execute("DROP TABLE treat_redemptions_legacy")
         db.execute("UPDATE favours SET title='Proxy' WHERE title!='Proxy'")
         if db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
             demo_password = "campus2026"
@@ -371,6 +394,27 @@ class Handler(SimpleHTTPRequestHandler):
             AND ((requester_id=? AND provider_id=?) OR (requester_id=? AND provider_id=?))""",
             (user_id, user_id, partner_id, partner_id, user_id)).fetchone()[0]
         return int(favour_delta + treat_delta)
+
+    @staticmethod
+    def total_outstanding_debt(db, user_id):
+        """Sum this user's deficits with each person without offsetting separate credits."""
+        return int(db.execute("""WITH entries AS (
+                SELECT CASE WHEN creator_id=? THEN beneficiary_id ELSE creator_id END AS partner_id,
+                       CASE WHEN creator_id=? THEN 1 ELSE -1 END AS amount
+                FROM favours
+                WHERE status='confirmed' AND (creator_id=? OR beneficiary_id=?)
+                UNION ALL
+                SELECT CASE WHEN requester_id=? THEN provider_id ELSE requester_id END AS partner_id,
+                       CASE WHEN requester_id=? THEN -cost ELSE cost END AS amount
+                FROM treat_redemptions
+                WHERE status='fulfilled' AND (requester_id=? OR provider_id=?)
+            ), balances AS (
+                SELECT partner_id, SUM(amount) AS balance FROM entries GROUP BY partner_id
+            )
+            SELECT COALESCE(SUM(CASE WHEN balance < 0 THEN -balance ELSE 0 END),0)
+            FROM balances""",
+            (user_id, user_id, user_id, user_id,
+             user_id, user_id, user_id, user_id)).fetchone()[0])
 
     @staticmethod
     def relationship_reserved(db, user_id, partner_id):
@@ -563,6 +607,7 @@ class Handler(SimpleHTTPRequestHandler):
                 for row in rows:
                     person = dict(row)
                     person.update(self.relationship_summary(db, user["id"], row["id"]))
+                    person["outstanding_debt"] = self.total_outstanding_debt(db, row["id"])
                     people.append(person)
                 return self.send_json({"people": people})
             if path.startswith("/api/people/"):
@@ -672,7 +717,17 @@ class Handler(SimpleHTTPRequestHandler):
                     provider_id = int(data.get("provider_id"))
                 except (ValueError, TypeError):
                     return self.send_json({"error": "Choose the person providing the treat."}, 400)
-                treat = TREAT_BY_KEY.get(str(data.get("treat_key", "")))
+                treat_key = str(data.get("treat_key", "")).strip()
+                if treat_key == "custom":
+                    treat_name = str(data.get("custom_name", "")).strip()
+                    treat_cost = data.get("custom_cost")
+                    if not treat_name or len(treat_name) > 80:
+                        return self.send_json({"error": "Enter a custom dish name up to 80 characters."}, 400)
+                    if isinstance(treat_cost, bool) or not isinstance(treat_cost, int) or treat_cost < 1:
+                        return self.send_json({"error": "Set the custom dish price to a whole number of at least 1 P ₱."}, 400)
+                    treat = {"key": "custom", "name": treat_name, "cost": treat_cost}
+                else:
+                    treat = TREAT_BY_KEY.get(treat_key)
                 provider = db.execute("SELECT id FROM users WHERE id=? AND id!=?",
                                       (provider_id, user["id"])).fetchone()
                 if not provider or not treat:
@@ -680,7 +735,7 @@ class Handler(SimpleHTTPRequestHandler):
                 relationship = self.relationship_summary(db, user["id"], provider_id)
                 if relationship["available"] < treat["cost"]:
                     short = treat["cost"] - relationship["available"]
-                    return self.send_json({"error": "You need %s more FC with this person." % short}, 400)
+                    return self.send_json({"error": "You need %s more P ₱ with this person." % short}, 400)
                 cur = db.execute("""INSERT INTO treat_redemptions
                     (requester_id,provider_id,treat_key,treat_name,cost)
                     VALUES(?,?,?,?,?)""",
@@ -701,7 +756,7 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json({"error": "Only the person providing the treat can mark it delivered."}, 403)
                     balance = self.relationship_balance(db, redemption["requester_id"], redemption["provider_id"])
                     if balance < redemption["cost"]:
-                        return self.send_json({"error": "The requester no longer has enough FC with you."}, 409)
+                        return self.send_json({"error": "The requester no longer has enough P ₱ with you."}, 409)
                     db.execute("UPDATE treat_redemptions SET status='fulfilled',fulfilled_at=CURRENT_TIMESTAMP WHERE id=?",
                                (redemption_id,))
                     return self.send_json({"ok": True})

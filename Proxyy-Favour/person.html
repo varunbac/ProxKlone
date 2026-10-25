@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shared ledger | Hangout</title>
     <link rel="stylesheet" href="home%20page/style.css">
-    <link rel="stylesheet" href="home%20page/favour.css?v=7">
-    <link rel="stylesheet" href="pages.css?v=6">
+    <link rel="stylesheet" href="home%20page/favour.css?v=11">
+    <link rel="stylesheet" href="pages.css?v=7">
     <link rel="stylesheet" href="kloner.css?v=2">
 </head>
 <body class="subpage-body">
@@ -51,11 +51,15 @@
         <section class="page-glass glass-surface glass-tilt relationship-treats">
             <div class="relationship-section-heading">
                 <div><div class="favour-kicker">Only with this person</div><h2 id="treatHeading">Redeem a treat</h2></div>
-                <span class="relationship-available"><span id="availableBalance">0 FC</span><small id="availableCaption">Available with this person</small></span>
+                <span class="relationship-available"><span id="availableBalance">0 P₱</span><small id="availableCaption">Available with this person</small></span>
             </div>
-            <p class="relationship-note">Pick a treat. Coins leave your balance on delivery.</p>
+            <p class="relationship-note">Pick a treat. ProxyPaisa are deducted on delivery.</p>
             <form id="treatForm" class="page-form">
                 <label>Choose a treat<select id="treatSelection" required><option value="">Loading treats…</option></select></label>
+                <div class="custom-treat-fields" id="customTreatFields" hidden>
+                    <label>Custom dish name<input id="customTreatName" type="text" maxlength="80" placeholder="Name your dish" disabled></label>
+                    <label>Price in ProxyPaisa (P ₱)<input id="customTreatCost" type="number" min="1" step="1" inputmode="numeric" placeholder="Whole number" disabled></label>
+                </div>
                 <div class="relationship-treat-action"><button type="submit" id="treatSubmit" disabled>Request this treat</button><span id="treatBalanceNote"></span></div>
             </form>
             <div class="page-message" id="treatMessage" aria-live="polite"></div>
@@ -63,6 +67,6 @@
     </main>
     <footer class="subpage-footer">Hangout · IIT Roorkee</footer>
     <script src="site.js"></script>
-    <script src="pages.js?v=11"></script>
+    <script src="pages.js?v=14"></script>
 </body>
 </html>

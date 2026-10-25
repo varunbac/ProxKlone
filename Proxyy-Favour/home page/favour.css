@@ -1,4 +1,6 @@
 /* Additional Favour content only. The original parallax selectors and animation remain untouched. */
+.paisa-symbol{display:inline-flex;align-items:baseline;gap:.16em;white-space:nowrap;letter-spacing:0}
+.paisa-mark{display:inline-block;font-size:.58em;font-weight:400;line-height:1;letter-spacing:0;transform:translateY(-.08em)}
 .favour-shell{width:min(1180px,100%);margin:0 auto;color:#fff}
 .favour-intro{max-width:720px;margin:0 0 42px}
 .favour-kicker{font-size:.72rem;letter-spacing:.19em;text-transform:uppercase;color:#b5b5dc;margin-bottom:12px}

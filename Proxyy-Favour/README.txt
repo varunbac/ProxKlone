@@ -31,11 +31,13 @@ create an account.
 
 Mark a proxy by choosing the person and date/time. There is no proxy-name
 field; records are simply labeled “Proxy.” When the recipient confirms it, the
-person who recorded the proxy gains 1 FC in their balance with that person; the
-recipient’s corresponding balance decreases by 1. All other relationships stay
+person who recorded the proxy gains 1 P₱ (ProxyPaisa) in their balance with
+that person; the recipient’s corresponding balance decreases by 1. All other relationships stay
 separate. A treat request reserves its cost and reduces that shared balance only
 after the provider marks it delivered. A declined or cancelled request releases
-the reservation. Aloo pakoda unlocks at 3 coins and Hyderabadi biryani at 5 coins.
+the reservation. Aloo pakoda costs 2 P₱, Midnight Maggi 3 P₱, Masala dosa and
+Chole bhature 4 P₱ each, and Hyderabadi biryani 5 P₱. Custom dishes can be
+priced in whole ProxyPaisa up to the balance available with that person.
 
 The navigation opens Home, Mark a proxy, People, and Klone. Klone opens in a
 full-screen overlay; use Return to Hangout to close it.
